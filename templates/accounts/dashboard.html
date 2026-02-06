@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Panel inicial | Matchers{% endblock %}
+{% block body_class %}page-dashboard{% endblock %}
+{% block topbar_title %}2.PANEL INICIAL/MIS LOVERS{% endblock %}
+
+{% block content %}
+  <section class="panel-card" role="region" aria-label="Panel inicial">
+    <header class="panel-header">
+      <div class="panel-logo">
+        <div class="logo-title">READY 2 LOVE</div>
+        <div class="logo-tagline">Matchers</div>
+      </div>
+      <div class="panel-avatar" aria-hidden="true"></div>
+    </header>
+    <div class="panel-body">
+      <aside class="panel-sidebar">
+        <nav class="panel-nav">
+          <a class="active" href="#">Mis lovers</a>
+          <a href="#">Historial de lovers</a>
+          <a href="#">Validación de Lovers</a>
+        </nav>
+      </aside>
+      <div class="panel-main">
+        <div class="panel-toolbar">
+          <h2>Mis lovers</h2>
+          <label class="search">
+            <span class="search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+              </svg>
+            </span>
+            <input type="search" placeholder="Buscar" aria-label="Buscar">
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table class="lovers-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Citas restantes</th>
+                <th>Estado</th>
+                <th>Cita con</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ lover.name }}</td>
+                <td>{{ lover.remaining_dates }}</td>
+                <td>
+                  <select class="status-select" aria-label="Estado">
+                    {% for option in status_options %}
+                      <option value="{{ option }}"{% if option == lover.status %} selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>{{ lover.date_with }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <footer class="panel-footer">Copyright</footer>
+  </section>
+{% endblock %}

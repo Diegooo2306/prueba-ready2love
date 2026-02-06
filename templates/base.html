@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Matchers{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-title">{% block topbar_title %}1.LOGIN{% endblock %}</div>
+        <div class="diamond-group" aria-hidden="true">
+          <span class="diamond diamond-orange"></span>
+          <span class="diamond diamond-white"></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

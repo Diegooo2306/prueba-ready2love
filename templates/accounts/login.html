@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio de sesión | Matchers{% endblock %}
+{% block body_class %}page-login{% endblock %}
+
+{% block content %}
+  <section class="login-card" role="region" aria-label="Inicio para Matchers">
+    <div class="card-header">
+      <h2>Inicio para Matchers</h2>
+    </div>
+    <div class="card-body">
+      {% if error_message %}
+        <div class="error-banner">{{ error_message }}</div>
+      {% endif %}
+      <form method="post" class="login-form">
+        {% csrf_token %}
+        <div class="form-field">
+          <label class="pill" for="id_username">Usuario</label>
+          <input type="text" id="id_username" name="username" autocomplete="username" required>
+        </div>
+        <div class="form-field">
+          <label class="pill" for="id_password">Contraseña</label>
+          <input type="password" id="id_password" name="password" autocomplete="current-password" required>
+        </div>
+        <label class="remember">
+          <input type="checkbox" name="remember_me">
+          Recordarme
+        </label>
+        <button type="submit" class="primary-button">Entrar</button>
+      </form>
+    </div>
+    <div class="card-footer">Copyright</div>
+  </section>
+{% endblock %}
