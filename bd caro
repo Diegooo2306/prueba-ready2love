@@ -1,0 +1,432 @@
+-- =========================================
+-- POSTGRESQL - USERS LOV001
+-- id_user VARCHAR generado autom�tico
+-- IGNORA cualquier id_user manual
+-- =========================================
+
+-- 1) SEQUENCE
+CREATE SEQUENCE seq_users_lov
+START 1
+INCREMENT 1;
+
+-- 2) FUNCI�N GENERADORA LOV001
+CREATE OR REPLACE FUNCTION generar_lov_id()
+RETURNS VARCHAR AS $$
+BEGIN
+    RETURN 'LOV' || LPAD(nextval('seq_users_lov')::text, 3, '0');
+END;
+$$ LANGUAGE plpgsql;
+
+-- 3) TABLA USERS
+CREATE TABLE users (
+    id_user VARCHAR(10) PRIMARY KEY DEFAULT generar_lov_id(),
+    fecha_registro DATE NOT NULL DEFAULT CURRENT_DATE,
+
+    nombre VARCHAR(255) NOT NULL,
+    apellido1 VARCHAR(36),
+    apellido2 VARCHAR(36),
+
+    email VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+
+    rol NUMERIC(1,0) DEFAULT 0,
+    edad NUMERIC(2,0),
+    genero VARCHAR(10),
+    estado_civil VARCHAR(10),
+    ndec NUMERIC(2,0),
+    status NUMERIC(1,0) DEFAULT 1
+);
+
+-- 4) TRIGGER: SIEMPRE genera el id_user (aunque intenten mandarlo)
+CREATE OR REPLACE FUNCTION forzar_id_user_auto()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.id_user := generar_lov_id();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_forzar_id_user_auto
+BEFORE INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION forzar_id_user_auto();
+
+-- =========================================
+-- USER_DATA
+-- =========================================
+CREATE TABLE user_data (
+    id_data INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_user VARCHAR(10)NOT NULL UNIQUE,
+
+    identificacion VARCHAR(255),
+    lvlOfIng NUMERIC(6,0),
+    preferencia VARCHAR(10),
+    terminos_condiciones BOOLEAN,
+    estado VARCHAR(255),
+    colonia VARCHAR(255),
+    calle_numero VARCHAR(255),
+    cp NUMERIC(5,0),
+
+    CONSTRAINT fk_user_data_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+-- =========================================
+-- CUESTIONARIO_GUSTOS
+-- =========================================
+CREATE TABLE cuestionario_gustos (
+    id_cuest INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_user VARCHAR(10),
+    generales NUMERIC(2,1),
+    estilos_vida NUMERIC(2,1),
+    valores NUMERIC(2,1),
+    personal NUMERIC(2,1),
+    estilo_relacional NUMERIC(2,1),
+    intencion NUMERIC(2,1),
+    preferencias NUMERIC(2,1),
+    compatibilidad NUMERIC(2,1),
+    fisico NUMERIC(2,1),
+    limites NUMERIC(2,1),
+
+    CONSTRAINT fk_cuestionario_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+CREATE TABLE generales (
+    id_cuest INT PRIMARY KEY,
+     id_user VARCHAR(10),
+    dg01 NUMERIC(2,0),
+    dg02 VARCHAR(255),
+    dg03 VARCHAR(2),
+    dg04 VARCHAR(10),
+    dg05 VARCHAR(10),
+    dg06 VARCHAR(12),
+    dg07 VARCHAR(2),
+    dg08 VARCHAR(2),
+    dg09 NUMERIC(1,0),
+
+    CONSTRAINT fk_generales_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_generales_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+CREATE TABLE estilo_vida (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+    el01 NUMERIC(1,0),
+    el02 NUMERIC(1,0),
+    el03 NUMERIC(1,0),
+    el04 NUMERIC(1,0),
+    el05 NUMERIC(1,0),
+    el06 NUMERIC(1,0),
+    el07 NUMERIC(1,0),
+    el08 NUMERIC(1,0),
+    el09 NUMERIC(1,0),
+    el10 NUMERIC(1,0),
+    el11 NUMERIC(1,0),
+    el12 NUMERIC(1,0),
+    el13 NUMERIC(1,0),
+    el14 NUMERIC(1,0),
+    el15 NUMERIC(1,0),
+    el16 NUMERIC(1,0),
+    el17 NUMERIC(1,0),
+    el18 NUMERIC(1,0),
+
+    CONSTRAINT fk_estilo_vida_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_estio_vida_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+CREATE TABLE valores (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    val01 NUMERIC(1,0),
+    val02 NUMERIC(1,0),
+    val03 NUMERIC(1,0),
+    val04 NUMERIC(1,0),
+    val05 NUMERIC(1,0),
+    val06 NUMERIC(1,0),
+    val07 NUMERIC(1,0),
+    val08 NUMERIC(1,0),
+    val09 NUMERIC(1,0),
+    val10 NUMERIC(1,0),
+    val11 NUMERIC(1,0),
+    val12 NUMERIC(1,0),
+    val13 NUMERIC(1,0),
+    val14 NUMERIC(1,0),
+    val15 NUMERIC(1,0),
+
+    CONSTRAINT fk_valores_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_valores_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+-- =========================================
+-- PERSONALIDAD
+-- =========================================
+CREATE TABLE personalidad (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    bf01 NUMERIC(1,0),
+    bf02 NUMERIC(1,0),
+    bf03 NUMERIC(1,0),
+    bf04 NUMERIC(1,0),
+    bf05 NUMERIC(1,0),
+    bf06 NUMERIC(1,0),
+    bf07 NUMERIC(1,0),
+    bf08 NUMERIC(1,0),
+    bf09 NUMERIC(1,0),
+    bf10 NUMERIC(1,0),
+    bf11 NUMERIC(1,0),
+    bf12 NUMERIC(1,0),
+    bf13 NUMERIC(1,0),
+    bf14 NUMERIC(1,0),
+    bf15 NUMERIC(1,0),
+    bf16 NUMERIC(1,0),
+    bf17 NUMERIC(1,0),
+    bf18 NUMERIC(1,0),
+    bf19 NUMERIC(1,0),
+    bf20 NUMERIC(1,0),
+    bf21 NUMERIC(1,0),
+    bf22 NUMERIC(1,0),
+    bf23 NUMERIC(1,0),
+    bf24 NUMERIC(1,0),
+    bf25 NUMERIC(1,0),
+    bf26 NUMERIC(1,0),
+    bf27 NUMERIC(1,0),
+    bf28 NUMERIC(1,0),
+    bf29 NUMERIC(1,0),
+    bf30 NUMERIC(1,0),
+
+    CONSTRAINT fk_personalidad_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_personalidad_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+-- =========================================
+-- RELACIONAL
+-- =========================================
+CREATE TABLE relacional (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    rel01 NUMERIC(1,0),
+    rel02 NUMERIC(1,0),
+    rel03 NUMERIC(1,0),
+    rel04 NUMERIC(1,0),
+    rel05 NUMERIC(1,0),
+    rel06 NUMERIC(1,0),
+    rel07 NUMERIC(1,0),
+    rel08 NUMERIC(1,0),
+    rel09 NUMERIC(1,0),
+    rel10 NUMERIC(1,0),
+    rel11 NUMERIC(1,0),
+    rel12 NUMERIC(1,0),
+    rel13 NUMERIC(1,0),
+    rel14 NUMERIC(1,0),
+    rel15 NUMERIC(1,0),
+
+    CONSTRAINT fk_relacional_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_relacional_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+
+CREATE TABLE intencion (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    tr01 VARCHAR(13),
+    tr02 NUMERIC(1,0),
+
+    CONSTRAINT fk_intencion_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_intencion_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+CREATE TABLE preferencias (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+ 
+    rd01 NUMERIC(1,0),
+    rd02 NUMERIC(1,0),
+    rd03 NUMERIC(1,0),
+    rd04 NUMERIC(1,0),
+    rd05 NUMERIC(1,0),
+    rd06 NUMERIC(1,0),
+    rd07 NUMERIC(1,0),
+    rd08 NUMERIC(1,0),
+    rd09 NUMERIC(1,0),
+    rd10 NUMERIC(1,0),
+    rd11 NUMERIC(1,0),
+    rd12 NUMERIC(1,0),
+    rd13 NUMERIC(1,0),
+    rd14 NUMERIC(1,0),
+    rd15 NUMERIC(1,0),
+    rd16 NUMERIC(1,0),
+    rd17 NUMERIC(1,0),
+    rd18 NUMERIC(1,0),
+    rd19 NUMERIC(1,0),
+    rd20 NUMERIC(1,0),
+
+    vr01 NUMERIC(1,0),
+    vr02 NUMERIC(1,0),
+    vr03 NUMERIC(1,0),
+    vr04 NUMERIC(1,0),
+    vr05 NUMERIC(1,0),
+    vr06 NUMERIC(1,0),
+    vr07 NUMERIC(1,0),
+    vr08 NUMERIC(1,0),
+    vr09 NUMERIC(1,0),
+    vr10 NUMERIC(1,0),
+    vr11 NUMERIC(1,0),
+    vr12 NUMERIC(1,0),
+    vr13 NUMERIC(1,0),
+    vr14 NUMERIC(1,0),
+    vr15 NUMERIC(1,0),
+    vr16 NUMERIC(1,0),
+    vr17 NUMERIC(1,0),
+    vr18 NUMERIC(1,0),
+
+    CONSTRAINT fk_preferencias_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_preferencias_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+CREATE TABLE compatibilidad (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    evp01 NUMERIC(1,0),
+    evp02 NUMERIC(1,0),
+    evp03 NUMERIC(1,0),
+    evp04 NUMERIC(1,0),
+    evp05 NUMERIC(1,0),
+    evp06 NUMERIC(1,0),
+    evp07 NUMERIC(1,0),
+    evp08 NUMERIC(1,0),
+    evp09 NUMERIC(1,0),
+    evp10 NUMERIC(1,0),
+    evp11 NUMERIC(1,0),
+    evp12 NUMERIC(1,0),
+
+    CONSTRAINT fk_compatibilidad_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_compatibilidad_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+CREATE TABLE fisico (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    afi01 NUMERIC(1,0),
+    afi02 NUMERIC(1,0),
+    afi03 NUMERIC(1,0),
+    afi04 NUMERIC(1,0),
+
+    afg01 VARCHAR(2),
+    afg02 VARCHAR(2),
+    afg03 VARCHAR(2),
+
+    afp01 NUMERIC(1,0),
+    afp02 NUMERIC(1,0),
+    afp03 NUMERIC(1,0),
+    afp04 NUMERIC(1,0),
+
+    afq01 NUMERIC(1,0),
+    afq02 NUMERIC(1,0),
+    afq03 NUMERIC(1,0),
+    afq04 NUMERIC(1,0),
+
+    aff01 NUMERIC(1,0),
+    aff02 NUMERIC(1,0),
+    aff03 NUMERIC(1,0),
+    aff04 NUMERIC(1,0),
+
+    CONSTRAINT fk_fisico_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_fisico_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+CREATE TABLE limites (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    nn01 VARCHAR(255),
+    nn02 VARCHAR(255),
+
+    CONSTRAINT fk_limites_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_limites_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+CREATE TABLE tipo_pareja (
+    id_cuest INT PRIMARY KEY,
+    id_user VARCHAR(10),
+
+    sc01 VARCHAR(1),
+    sc02 VARCHAR(1),
+
+    CONSTRAINT fk_tipo_pareja_cuest
+        FOREIGN KEY (id_cuest)
+        REFERENCES cuestionario_gustos(id_cuest),
+CONSTRAINT fk_tipo_pareja_user
+        FOREIGN KEY (id_user)
+        REFERENCES users(id_user)
+);
+
+
+-- =========================================
+-- MATCHER
+-- =========================================
+CREATE TABLE matcher (
+    id_matricula INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL UNIQUE,
+    fecha_ingreso DATE NOT NULL DEFAULT CURRENT_DATE,
+    nombre VARCHAR(100) NOT NULL,
+    apellido1 VARCHAR(36),
+    apellido2 VARCHAR(36),
+    mapa VARCHAR(255)
+);
